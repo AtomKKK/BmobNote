@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -143,7 +144,7 @@ public class NoteDetailActivity extends AppCompatActivity {
 
             for (int i = 0; i < contents.length; i++) {
                 tempContent += contents[i] + "\n";
-                if (contents[i] != "") {
+                if (!TextUtils.isEmpty(contents[i])) {
 
                     contentList.add(contents[i]);
                 }
@@ -153,6 +154,11 @@ public class NoteDetailActivity extends AppCompatActivity {
             Log.i(TAG, "final text to shown :" + tempContent);
 
             for (String line : contentList) {
+                /*Log.i(TAG, "line :" + line.equals("\n"));
+                if (line.equals("\n")) {
+                    continue;
+                }*/
+                Log.i(TAG, "line.startsWith(\"/\") :" + (line.startsWith("/") && (line.endsWith(".jpg") || line.endsWith(".png"))));
                 if (line.startsWith("/") && (line.endsWith(".jpg") || line.endsWith(".png"))) {
                     mEditText.insertBitmap(line);
                 } else {

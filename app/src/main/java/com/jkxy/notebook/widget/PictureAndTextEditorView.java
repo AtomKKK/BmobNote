@@ -11,11 +11,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
+
 import com.jkxy.notebook.util.BmobUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 /**
@@ -194,12 +196,17 @@ public class PictureAndTextEditorView extends EditText {
     public Bitmap getSmallBitmap(String filePath, int reqWidth, int reqHeight) {
         File file = new File(filePath);
         if (!file.exists()) {
-            String[] filenames = filePath.split("/");
-            String filename = filenames[filenames.length - 1];
-            //文件不存在->从云端下载
-            String url = BmobUtils.obtaiFileUrlByLocalPath(filePath);
-            BmobUtils.downloadFile(filename, url, file);
-
+            try {
+                String[] filenames = filePath.split("/");
+                String filename = filenames[filenames.length - 1];
+                Log.e(TAG, "filename: " + filename);
+                //文件不存在->从云端下载
+                String url = BmobUtils.obtaiFileUrlByLocalPath(filePath);
+                file.createNewFile();
+                BmobUtils.downloadFile(filename, url, file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         final BitmapFactory.Options options = new BitmapFactory.Options();

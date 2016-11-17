@@ -12,8 +12,8 @@ public class Constants {
     public static final String BMOB_API_KEY = "a456d96b35c5d25611e0bf63bb31fd94";
 
     // 应用包名
-    public static final String PACKAGE_NAME = "com.example.yangtianrui.notebook";
+    public static final String PACKAGE_NAME = "com.jkxy.notebook";
 
-    public static final String SYNC_BROADCAST_ACTION = "com.example.yangtianrui.notebook.SYNC";
+    public static final String SYNC_BROADCAST_ACTION = "com.jkxy.notebook.SYNC";
 
 }
