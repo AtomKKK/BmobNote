@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Yi Note</string>
+
+    <string name="all_notes">ALlNotes</string>
+    <string name="search_note">SearchByTitle</string>
+    <string name="setting">Setting</string>
+    <string name="modify_note">modify</string>
+    <string name="add_note">AddNote</string>
+    <string name="searchNote">Search</string>
+    <string name="SYCN_COMPLETE">自动同步完成</string>
+    <string name="title_activity_rich_text">RichTextActivity</string>
+</resources>

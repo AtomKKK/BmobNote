@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/id_toolbar_detail"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="top">
+
+            <EditText
+                android:id="@+id/id_et_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"/>
+
+            <TextView
+                android:id="@+id/id_tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"/>
+        </FrameLayout>
+
+        <!--  <com.example.yangtianrui.notebook.widget.LineEditText
+              android:id="@+id/id_et_content"
+              android:layout_width="match_parent"
+              android:layout_height="300dp"
+              android:layout_gravity="center"
+              android:gravity="top"
+              android:padding="10dp" />-->
+
+        <!--替换富文本 20161024-->
+
+        <FrameLayout
+            android:id="@+id/note_content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+
+            <com.example.yangtianrui.notebook.widget.PictureAndTextEditorView
+                android:id="@+id/edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start"
+                android:hint="132456"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
+                />
+
+            <TextView
+                android:id="@+id/note_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/button_add_picture"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:text="点我插图"/>
+
+        <!--<Button
+            android:id="@+id/id_btn_modify"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            android:padding="10dp"
+            android:text="@string/modify_note"/>-->
+    </LinearLayout>
+
+</LinearLayout>
