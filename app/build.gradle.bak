@@ -7,7 +7,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "com.example.yangtianrui.notebook"
+        applicationId "com.jkxy.yangtianrui.notebook"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

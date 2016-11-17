@@ -52,7 +52,7 @@
             android:layout_weight="1"
             >
 
-            <com.example.yangtianrui.notebook.widget.PictureAndTextEditorView
+            <com.jkxy.yangtianrui.notebook.widget.PictureAndTextEditorView
                 android:id="@+id/edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
