@@ -17,7 +17,9 @@ public class Note extends BmobObject {
     private String content;
     private String createTime;
     private String updateTime;
-//    private String bmobObjectId;
+
+
+    private String bmobObjectId;
 
     // 辅助属性
     private String userName;
@@ -25,6 +27,16 @@ public class Note extends BmobObject {
 
     //添加image属性
     private List<BmobFile> images;
+
+    public List<String> getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(List<String> imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    private List<String> imageUrl;
 
     public Note(String title, String content, String createTime, List<BmobFile> images) {
         this.title = title;
@@ -41,13 +53,13 @@ public class Note extends BmobObject {
 
     public Note() {
     }
-  /*  public String getBmobObjectId() {
+    public String getBmobObjectId() {
         return bmobObjectId;
     }
 
     public void setBmobObjectId(String bmobObjectId) {
         this.bmobObjectId = bmobObjectId;
-    }*/
+    }
     public String getUpdateTime() {
         return updateTime;
     }

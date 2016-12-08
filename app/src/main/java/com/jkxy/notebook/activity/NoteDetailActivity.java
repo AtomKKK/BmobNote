@@ -1,6 +1,5 @@
 package com.jkxy.notebook.activity;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -14,12 +13,10 @@ import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jkxy.notebook.R;
 import com.jkxy.notebook.bean.Note;
@@ -29,9 +26,13 @@ import com.jkxy.notebook.util.SDCardUtils;
 import com.jkxy.notebook.util.TextFormatUtil;
 import com.jkxy.notebook.util.UriUtils;
 import com.jkxy.notebook.widget.PictureAndTextEditorView;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Think on 2016/11/1.
@@ -39,19 +40,24 @@ import java.util.Date;
 public class NoteDetailActivity extends AppCompatActivity {
 
     public static final String SENDED_NOTE_ID = "note_id";
-    private EditText mEtTitle;
-    //    private LineEditText mEtContent;
-    private Button mBtnModify;
-    private Toolbar mToolbar;
+
     private NoteDAO mNoteDAO;
     private Cursor mCursor;
     private Note mNote;
     private int mNoteID = -1;
-    private PictureAndTextEditorView mEditText;
-    private Button mInsertPicBtn;
-    private TextView mNoteTextView;
-    private TextView mTvTitle;
 
+    @BindView(R.id.id_et_title)
+    EditText mEtTitle;
+    @BindView(R.id.id_toolbar_detail)
+    Toolbar mToolbar;
+    @BindView(R.id.edit_text)
+    PictureAndTextEditorView mEditText;
+    @BindView(R.id.button_add_picture)
+    Button mInsertPicBtn;
+    @BindView(R.id.note_text)
+    TextView mNoteTextView;
+    @BindView(R.id.id_tv_title)
+    TextView mTvTitle;
 
     private String TAG = NoteDetailActivity.class.getSimpleName();
 
@@ -59,8 +65,35 @@ public class NoteDetailActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_detail);
-        mToolbar = (Toolbar) findViewById(R.id.id_toolbar_detail);
-        mToolbar.setTitle("Node Detail");
+        ButterKnife.bind(this);
+//        mToolbar = (Toolbar) findViewById(R.id.id_toolbar_detail);
+        initToolBar();
+        initData();
+        initView();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        String title = mEtTitle.getText().toString();
+        String content = mEditText.getText().toString();
+        mNote.setTitle(title);
+        mNote.setContent(content);
+
+        Logger.d(TAG, "onBackPressed BmobObjectId:" + mNote.getBmobObjectId());
+
+        BmobUtils.saveNote2Cloud(mNote);
+        BmobUtils.SyncNotes2LocalDB(mNote, mNoteDAO, mNoteID);
+
+        if (mCursor != null) {
+            mCursor.close();
+        }
+    }
+
+    private void initToolBar() {
+        mToolbar.setTitle("Note Detail");
         // 显示返回按钮
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -72,10 +105,6 @@ public class NoteDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        initData();
-        initView();
-
-
     }
 
     private void initData() {
@@ -91,6 +120,9 @@ public class NoteDetailActivity extends AppCompatActivity {
                 mNote.setTitle(mCursor.getString(mCursor.getColumnIndex("title")));
                 mNote.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
                 mNote.setCreateTime(mCursor.getString(mCursor.getColumnIndex("create_time")));
+//                mNote.setLocalId(mCursor.getString(mCursor.getColumnIndex("create_time")));
+                mNote.setBmobObjectId(mCursor.getString(mCursor.getColumnIndex("bmob_object_id")));
+                Logger.d(TAG, "BmobObjectId:" + mNote.getBmobObjectId());
             }
 
             mToolbar.setTitle(mNote.getTitle());
@@ -99,20 +131,8 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
 
     private void initView() {
-
-        mNoteTextView = (TextView) findViewById(R.id.note_text);
-        mEditText = (PictureAndTextEditorView) findViewById(R.id.edit_text);
-
-        mEtTitle = (EditText) findViewById(R.id.id_et_title);
-        mTvTitle = (TextView) findViewById(R.id.id_tv_title);
 
         if (mNoteID != -1) {
             //新建note
@@ -122,21 +142,24 @@ public class NoteDetailActivity extends AppCompatActivity {
             mEtTitle.setVisibility(View.VISIBLE);
             mEtTitle.setText(mNote.getTitle());
         } else {
-            mNoteTextView.setVisibility(View.VISIBLE);
-            mTvTitle.setVisibility(View.VISIBLE);
-            mEditText.setVisibility(View.GONE);
+            mNoteTextView.setVisibility(View.GONE);
+            mTvTitle.setVisibility(View.GONE);
 
-            mEtTitle.setVisibility(View.GONE);
+            mEditText.setVisibility(View.VISIBLE);
+            mEtTitle.setVisibility(View.VISIBLE);
             mTvTitle.setText(mNote.getTitle());
+
         }
+        initEvent();
+        //显示note文字内容和图片内容
+        displayNote();
+    }
 
-
-
-        /* 替换富文本 20161024 STA */
+    private void displayNote() {
+    /* 替换富文本 20161024 STA */
         String content = mNote.getContent();
-        Log.i(TAG, "content from DB :" + mNote.getContent());
+        Logger.d(TAG, "content from DB :" + mNote.getContent());
         if (mNote.getContent().length() > 0) {
-//            String[] contents = content.substring(1, content.length() - 1).split(",");
             String[] contents = content.split("☆");
             ArrayList<String> contentList = new ArrayList<>();
 
@@ -150,41 +173,30 @@ public class NoteDetailActivity extends AppCompatActivity {
                 }
 
             }
-//            String textContent = tempContent.replaceAll("\\n", "\n");
-            Log.i(TAG, "final text to shown :" + tempContent);
+            Logger.d(TAG, "final text to shown :" + tempContent);
 
             for (String line : contentList) {
-                /*Log.i(TAG, "line :" + line.equals("\n"));
-                if (line.equals("\n")) {
+
+                if (line == null) {
                     continue;
-                }*/
-                Log.i(TAG, "line.startsWith(\"/\") :" + (line.startsWith("/") && (line.endsWith(".jpg") || line.endsWith(".png"))));
+                }
                 if (line.startsWith("/") && (line.endsWith(".jpg") || line.endsWith(".png"))) {
+                    Logger.d(TAG, "line :" + line);
+
                     mEditText.insertBitmap(line);
                 } else {
                     mEditText.append(line);
                 }
             }
 
-//            mEditText.setmContentList(contentList);
-
-            mNoteTextView.setText(tempContent);
 
         }
-//        mEditText.setText(mNote.getContent());
+    }
 
-//        mEditText.clearFocus();
-
-        mInsertPicBtn = (Button) findViewById(R.id.button_add_picture);
+    private void initEvent() {
         mInsertPicBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                PicturePickUtils.selectPicFromLocal(RichTextActivity.this,888);//获取手机本地图片的代码，大家可以自行实现
-                /*Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image*//*");
-                startActivityForResult(intent, 0);*/
-
                 Intent intent = new Intent(Intent.ACTION_PICK, null);
                 intent.setDataAndType(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
@@ -201,12 +213,12 @@ public class NoteDetailActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i(TAG, "onTextChanged: " + mEditText.getmContentList().toString());
+                Logger.d(TAG, "onTextChanged: " + mEditText.getmContentList().toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.i(TAG, "afterTextChanged: " + mEditText.getText().toString());
+                Logger.d(TAG, "afterTextChanged: " + mEditText.getText().toString());
 
 
             }
@@ -214,7 +226,7 @@ public class NoteDetailActivity extends AppCompatActivity {
         mEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "getSelectionStart: " + mEditText.getSelectionStart());
+                Logger.d(TAG, "getSelectionStart: " + mEditText.getSelectionStart());
             }
         });
 
@@ -233,23 +245,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                 mEtTitle.setVisibility(View.VISIBLE);
             }
         });
-
-        /* 替换富文本 20161024 END */
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    /*@Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.id_btn_modify) {
-            SyncNotes2LocalDB();
-        } else {
-            onBackPressed();
-        }
-    }*/
 
 
     /* 选择图片后压缩并且保存到外部空间的私有目录 20161024 STA */
@@ -262,7 +258,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                     if (data != null) {
                         Uri selectedImage = data.getData();
                         final String imagePath = UriUtils.getFilePathByUri(this, selectedImage);
-                        Log.d(TAG, "image path is : " + imagePath);
+                        Logger.d(TAG, "image path is : " + imagePath);
                         String temp[] = imagePath.split("/");
                         String imageName = null;
                         if (temp.length > 1) {
@@ -295,53 +291,6 @@ public class NoteDetailActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * 将笔记保存到本地数据库
-     */
-    private void SyncNotes2LocalDB(Note note) {
-//        String title = mEtTitle.getText().toString();
-        String title = note.getTitle();
-//        String content = mEditText.getText().toString();
-        String content = note.getContent();
-//        String content = mEditText.getmContentList().toString();
-        if (content.trim().equals("") && title.trim().equals("")) {
-            return;
-        }
-        ContentValues values = new ContentValues();
-        values.put("title", title);
-        values.put("content", content);
-        values.put("create_time", mNote.getCreateTime());
-        String createTime = mNote.getCreateTime();
-        int rowID = -1;
-        Cursor queryCursor = mNoteDAO.queryNote("create_time=?", new String[]{createTime});
-        if (queryCursor != null && queryCursor.getCount() > 0) {
-            //此note在本地数据库里已经存在了
-            mNote.setUpdateTime(TextFormatUtil.formatDate(new Date()));
-            rowID = mNoteDAO.updateNote(values, "_id=?", new String[]{mNoteID + ""});
-        } else {
-            //新建note到本地数据库
-            rowID = (int) mNoteDAO.insertNote(values);
-        }
 
-        if (rowID != -1) {
-            Log.i(TAG, "content to save to DB: " + content);
-            Toast.makeText(this, "修改或添加成功", Toast.LENGTH_SHORT).show();
-//            getContentResolver().notifyChange(Uri.parse("content://com.terry.NoteBook"), null);
-        }
-    }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        String title = mEtTitle.getText().toString();
-        String content = mEditText.getText().toString();
-        Note note = new Note();
-        note.setTitle(title);
-        note.setContent(content);
-        SyncNotes2LocalDB(note);
-        BmobUtils.saveNote2Cloud(note);
-        if (mCursor != null) {
-            mCursor.close();
-        }
-    }
 }

@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.StatFs;
 
+import com.orhanobut.logger.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -172,10 +174,11 @@ public class SDCardUtils {
         if (isSDCardMounted()) {
             BufferedOutputStream bos = null;
             // 获取私有的Cache缓存目录
-            File file = context.getExternalFilesDir(type);
+            File cacheDir = context.getExternalFilesDir(type);
+            File file = new File(cacheDir,fileName);
 
             try {
-                bos = new BufferedOutputStream(new FileOutputStream(new File(file, fileName)));
+                bos = new BufferedOutputStream(new FileOutputStream(file));
                 if (fileName != null) {
                     if (fileName.contains(".png") || fileName.contains(".PNG")) {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
@@ -184,6 +187,7 @@ public class SDCardUtils {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                     }
                     bos.flush();
+                    Logger.d("图片被缓存到"+file.getAbsolutePath());
                 } else {
                     throw new IllegalArgumentException("fileName can not be null...");
 

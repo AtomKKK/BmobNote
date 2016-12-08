@@ -3,19 +3,24 @@ package com.jkxy.notebook.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 
 import com.jkxy.notebook.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.bmob.v3.BmobUser;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private ImageView mIvSplash;
+
+    @BindView(R.id.splash_view)
+    View view;
+
     public static final String SEND_USER_NAME = "send_user_name";
     public static final String SEND_USER_ID = "send_user_id";
 
@@ -28,11 +33,12 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
                 , WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
-        mIvSplash = (ImageView) findViewById(R.id.id_iv_splash);
+        ButterKnife.bind(this);
+//        mIvSplash = (ImageView) findViewById(R.id.id_iv_splash);
         // 实现渐变效果
         Animation animation = new AlphaAnimation(0.5f, 1f);
         animation.setDuration(3000);
-        mIvSplash.startAnimation(animation);
+        view.startAnimation(animation);
         // 动画结束后启动登陆界面或主界面
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override

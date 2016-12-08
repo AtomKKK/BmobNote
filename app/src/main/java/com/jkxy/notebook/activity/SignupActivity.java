@@ -12,14 +12,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.jkxy.notebook.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -35,13 +38,20 @@ public class SignupActivity extends AppCompatActivity {
      */
     private UserLoginTask mAuthTask = null;
 
-    // UI references.
-    private EditText mEtUsername;
-    private EditText mEtPwd;
-    private EditText mEtVerify;
-    private View mProgressView;
-    private View mLoginFormView;
-    private Button mBtnSignup;
+
+
+    @BindView(R.id.id_et_signup_username)
+    EditText mEtUsername;
+    @BindView(R.id.id_et_signup_password)
+    EditText mEtPwd;
+    @BindView(R.id.id_et_signup_verify)
+    EditText mEtVerify;
+    @BindView(R.id.id_pb_signup_loading)
+    View mProgressView;
+    @BindView(R.id.id_lv_signup_form)
+    View mLoginFormView;
+    @BindView(R.id.id_btn_signup)
+    Button mBtnSignup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +66,8 @@ public class SignupActivity extends AppCompatActivity {
      * 初始化组件
      */
     private void initView() {
-        mEtPwd = (EditText) findViewById(R.id.id_et_signup_password);
-        mEtUsername = (EditText) findViewById(R.id.id_et_signup_username);
-        mBtnSignup = (Button) findViewById(R.id.id_btn_signup);
-        mProgressView = findViewById(R.id.id_pb_signup_loading);
-        mLoginFormView = findViewById(R.id.id_lv_signup_form);
-        mEtVerify = (EditText) findViewById(R.id.id_et_signup_verify);
+        ButterKnife.bind(this);
+
     }
 
     /**
@@ -79,13 +85,20 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        mBtnSignup.setOnClickListener(new OnClickListener() {
+        /*mBtnSignup.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
-        });
+        });*/
     }
+
+    @OnClick(R.id.id_btn_signup)
+    public void signupBtnClicked(){
+        attemptLogin();
+
+    }
+
 
     /**
      * 接收登陆的结果,并判断错误

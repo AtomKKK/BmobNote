@@ -9,7 +9,6 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,6 +16,7 @@ import com.jkxy.notebook.R;
 import com.jkxy.notebook.util.SDCardUtils;
 import com.jkxy.notebook.util.UriUtils;
 import com.jkxy.notebook.widget.PictureAndTextEditorView;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,12 +76,12 @@ public class RichTextActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i("EditActivity", mEditText.getmContentList().toString());
+                Logger.d("EditActivity", mEditText.getmContentList().toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.i("afterTextChanged", mEditText.getText().toString());
+                Logger.d("afterTextChanged", mEditText.getText().toString());
 
             }
         });
@@ -103,7 +103,7 @@ public class RichTextActivity extends AppCompatActivity {
                     if (data != null) {
                         Uri selectedImage = data.getData();
                         final String imagePath = UriUtils.getFilePathByUri(this, selectedImage);
-                        Log.d("RichTextActivity", "imageurl path is : " + imagePath);
+                        Logger.d("RichTextActivity", "imageurl path is : " + imagePath);
                         String temp[] = imagePath.split("/");
                         String imageName = null;
                         if (temp.length > 1) {

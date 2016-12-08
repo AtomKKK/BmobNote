@@ -24,19 +24,25 @@ import com.jkxy.notebook.fragment.AllNotesFragment;
 import com.jkxy.notebook.fragment.SearchNoteFragment;
 import com.jkxy.notebook.fragment.SettingFragment;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.bmob.v3.BmobUser;
 
-public class MainActivity extends AppCompatActivity
-//        implements AdapterView.OnItemClickListener {
-{
+public class MainActivity extends AppCompatActivity {
 
-    private Toolbar mToolbar;
-    private ActionBarDrawerToggle mToggle;
-    private FrameLayout mFlContent;
-    private NavigationView mNvMenu;
-    private DrawerLayout mDlLayout;
     private TextView mTvUserName;
     private View mHeaderView;
+    private ActionBarDrawerToggle mToggle;
+
+    @BindView(R.id.id_toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.id_fl_main_content)
+    FrameLayout mFlContent;
+    @BindView(R.id.id_nav_menu)
+    NavigationView mNvMenu;
+    @BindView(R.id.id_dl_main_layout)
+    DrawerLayout mDlLayout;
+
 
     private Fragment mFragments[] = new Fragment[3];
 
@@ -54,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         // 获取配置信息
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         IS_SYNC = pref.getBoolean("auto_sync", false);
-        mUserName = getIntent().getStringExtra( SplashActivity.SEND_USER_NAME);
+        mUserName = getIntent().getStringExtra(SplashActivity.SEND_USER_NAME);
         mUserID = getIntent().getStringExtra(SplashActivity.SEND_USER_ID);
         mFragments[0] = new AllNotesFragment();
         mFragments[1] = new SearchNoteFragment();
@@ -82,8 +88,9 @@ public class MainActivity extends AppCompatActivity
 
 
     private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.id_toolbar);
-        mToolbar.setTitle("Yi Note");
+        ButterKnife.bind(this);
+//        mToolbar = (Toolbar) findViewById(R.id.id_toolbar);
+        mToolbar.setTitle("Bmob Note");
         setSupportActionBar(mToolbar);
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             /**
@@ -100,9 +107,8 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         });
-        mDlLayout = (DrawerLayout) findViewById(R.id.id_dl_main_layout);
-        mFlContent = (FrameLayout) findViewById(R.id.id_fl_main_content);
-        mNvMenu = (NavigationView) findViewById(R.id.id_nav_menu);
+
+
         // 获取HeaderView
         mHeaderView = mNvMenu.getHeaderView(0);
         mTvUserName = (TextView) mHeaderView.findViewById(R.id.id_tv_username);

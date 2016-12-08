@@ -3,16 +3,17 @@ package com.jkxy.notebook.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
 
 import com.jkxy.notebook.util.BmobUtils;
+import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +131,7 @@ public class PictureAndTextEditorView extends EditText {
         }
 //        String content = getText().toString().replaceAll(mNewLineTag, "");
         String content = getText().toString();
-        Log.i("NoteDetailActivity", "getmContentList content : " + content);
+        Logger.d("getmContentList content : " + content);
         if (content.length() > 0 && content.contains(mNewLineTag)) {
             String[] split = content.split(mNewLineTag);
             mContentList.clear();
@@ -193,25 +194,45 @@ public class PictureAndTextEditorView extends EditText {
     }
 
     // 根据路径获得图片并压缩，返回bitmap用于显示
-    public Bitmap getSmallBitmap(String filePath, int reqWidth, int reqHeight) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            try {
-                String[] filenames = filePath.split("/");
-                String filename = filenames[filenames.length - 1];
-                Log.e(TAG, "filename: " + filename);
+    public Bitmap getSmallBitmap(String fileFullPath, int reqWidth, int reqHeight) {
+        String[] filenames = fileFullPath.split("/");
+        String filename = filenames[filenames.length - 1];
+        File file = new File(fileFullPath.replaceAll(filename, ""), filename);
+//        File filePath = new File(fileFullPath.replaceAll(filename,""));
+        File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+//        File filePath = new File(Environment.getExternalStorageDirectory() + "/Download/" + filename);
+        /*if (!filePath.exists()) {
+            filePath.mkdir();
+            //☆/storage/sdcard/Download/4248ce44579c4e2cc5c9a6cc9f5c1539.jpg☆
+
+            Log.e(TAG, "filename: " + filename);
+            //文件不存在->从云端下载
+            String url = BmobUtils.obtaiFileUrlByLocalPath(fileFullPath);
+
+            BmobUtils.downloadFile(filename, url, filePath);
+
+        }*/
+
+
+        try {
+
+            Logger.d(TAG, "filePath.getAbsolutePath(): " + filePath.getAbsolutePath());
+            boolean isCreated = filePath.createNewFile();
+            if (isCreated) {
                 //文件不存在->从云端下载
-                String url = BmobUtils.obtaiFileUrlByLocalPath(filePath);
-                file.createNewFile();
-                BmobUtils.downloadFile(filename, url, file);
-            } catch (IOException e) {
-                e.printStackTrace();
+                String url = BmobUtils.obtaiFileUrlByLocalPath(fileFullPath);
+                System.out.println("创建了文件");
+
+                BmobUtils.downloadFile(filename, url, filePath);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, options);
+        BitmapFactory.decodeFile(fileFullPath, options);
 
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
@@ -219,7 +240,7 @@ public class PictureAndTextEditorView extends EditText {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+        Bitmap bitmap = BitmapFactory.decodeFile(fileFullPath, options);
         /*DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
         int w_screen = dm.widthPixels;
         int w_width = w_screen;

@@ -35,7 +35,6 @@ public class AutoSyncService extends Service {
 
     private List<BmobObject> mNotes = new ArrayList<>();
     private Timer mTimer = new Timer();
-    //    private Uri mUri = Uri.parse("content://com.terry.NoteBook");
     private ContentResolver mResolver;
 
     public static final String SEND_SYNC_STATE = "STATE";

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DBHelper extends SQLiteOpenHelper {
     public static String DB_NAME = "notes";
-    public final static int DB_VERSON = 5;
+    public final static int DB_VERSON = 6;
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSON);
@@ -23,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + DB_NAME + "(_id integer primary key autoincrement" +
-                ",title text, content text,create_time text unique, is_sync text default 'false' not null, bmob_object_id text)");
+                ",title text, content text,create_time text unique, update_time text unique, is_sync text default 'false' not null, bmob_object_id text)");
     }
 
     @Override

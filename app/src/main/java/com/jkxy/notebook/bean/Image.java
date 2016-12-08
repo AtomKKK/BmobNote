@@ -20,6 +20,11 @@ public class Image extends BmobObject {
         this.url = url;
     }
 
+    public Image(String localPath, String url) {
+        this.localPath = localPath;
+        this.url = url;
+    }
+
     public String getLocalPath() {
         return localPath;
     }

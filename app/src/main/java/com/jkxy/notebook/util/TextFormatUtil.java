@@ -16,15 +16,28 @@ public class TextFormatUtil {
         return dateFormat.format(date);
     }
 
-    public static  Date parseText(String text) throws ParseException {
+    public static Date parseText(String text) throws ParseException {
         return dateFormat.parse(text);
     }
 
     public static String getNoteSummary(String content) {
         if (content.length() > 10) {
-            StringBuilder sb = new StringBuilder(content.substring(0, 10));
-            sb.append("...");
-            return sb.toString();
+            if (content.startsWith("☆")) {
+                return "图片";
+            }
+
+            String temp = content.substring(0, 10);
+
+            if (temp.contains("☆")) {
+                int index = temp.indexOf("☆");
+                StringBuilder sb = new StringBuilder(temp.substring(0, index));
+                return sb.append("...").toString();
+            } else {
+                StringBuilder sb = new StringBuilder(temp);
+                return sb.append("...").toString();
+            }
+
+
         }
         return content;
     }

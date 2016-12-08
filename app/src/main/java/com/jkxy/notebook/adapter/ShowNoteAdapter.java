@@ -33,7 +33,7 @@ public class ShowNoteAdapter extends CursorAdapter {
         ViewHolder holder = new ViewHolder();
         holder.mTvTitle = (TextView) view.findViewById(R.id.id_tv_note_title);
         holder.mTvContent = (TextView) view.findViewById(R.id.id_tv_note_summary);
-        holder.mTvCreateTime = (TextView) view.findViewById(R.id.id_tv_note_create_time);
+        holder.mTvUpdateTime = (TextView) view.findViewById(R.id.id_tv_note_update_time);
         view.setTag(holder);
         return view;
     }
@@ -44,12 +44,12 @@ public class ShowNoteAdapter extends CursorAdapter {
         String title = cursor.getString(cursor.getColumnIndex("title"));
         holder.mTvTitle.setText(title);
         holder.mTvContent.setText(TextFormatUtil.getNoteSummary(cursor.getString(cursor.getColumnIndex("content"))));
-        holder.mTvCreateTime.setText(cursor.getString(cursor.getColumnIndex("create_time")));
+        holder.mTvUpdateTime.setText(cursor.getString(cursor.getColumnIndex("update_time")));
     }
 
     final class ViewHolder {
         TextView mTvTitle;
         TextView mTvContent;
-        TextView mTvCreateTime;
+        TextView mTvUpdateTime;
     }
 }

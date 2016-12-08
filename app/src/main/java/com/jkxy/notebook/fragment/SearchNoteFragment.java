@@ -20,15 +20,26 @@ import com.jkxy.notebook.activity.NoteDetailActivity;
 import com.jkxy.notebook.adapter.ShowNoteAdapter;
 import com.jkxy.notebook.db.NoteDAO;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Think
  * 根据标题查找所有匹配的note
  */
 public class SearchNoteFragment extends Fragment {
 
-    private EditText mEtSearch;
+    /*private EditText mEtSearch;
     private ListView mLvResult;
-    private Button mBtnQuery;
+    private Button mBtnQuery;*/
+
+    @BindView(R.id.id_et_search_title)
+    EditText mEtSearch;
+    @BindView(R.id.id_lv_found_note)
+    ListView mLvResult;
+    @BindView(R.id.id_btn_search)
+    Button mBtnQuery;
+
     private CursorAdapter mAdapter;
     private NoteDAO mNoteDAO;
     private Cursor mCursor;
@@ -44,9 +55,10 @@ public class SearchNoteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_search, container, false);
-        mEtSearch = (EditText) root.findViewById(R.id.id_et_search_title);
+        ButterKnife.bind(this, root);
+        /*mEtSearch = (EditText) root.findViewById(R.id.id_et_search_title);
         mLvResult = (ListView) root.findViewById(R.id.id_lv_found_note);
-        mBtnQuery = (Button) root.findViewById(R.id.id_btn_search);
+        mBtnQuery = (Button) root.findViewById(R.id.id_btn_search);*/
         // 查询操作
         mBtnQuery.setOnClickListener(new View.OnClickListener() {
             @Override
