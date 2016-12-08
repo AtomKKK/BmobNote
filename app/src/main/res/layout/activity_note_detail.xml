@@ -35,15 +35,7 @@
                 android:padding="10dp"/>
         </FrameLayout>
 
-        <!--  <com.example.yangtianrui.notebook.widget.LineEditText
-              android:id="@+id/id_et_content"
-              android:layout_width="match_parent"
-              android:layout_height="300dp"
-              android:layout_gravity="center"
-              android:gravity="top"
-              android:padding="10dp" />-->
 
-        <!--替换富文本 20161024-->
 
         <FrameLayout
             android:id="@+id/note_content_frame"

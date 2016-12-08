@@ -42,7 +42,7 @@
                 android:layout_marginBottom="40dp"
                 android:layout_marginTop="1dp"
                 android:gravity="center"
-                android:text="一款简单易用的记事软件"
+                android:text="一款基于Bmob的云笔记"
                 android:textSize="13sp" />
 
 

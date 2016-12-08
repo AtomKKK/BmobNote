@@ -64,11 +64,7 @@ public class LoginActivity extends AppCompatActivity {
      * 初始化组件
      */
     private void initView() {
-    /*    mEtPwd = (EditText) findViewById(R.id.id_et_password);
-        mEtUsername = (EditText) findViewById(R.id.id_et_username);
-        mBtnLogin = (Button) findViewById(R.id.id_btn_login);
-        mProgressView = findViewById(R.id.id_pb_loading);
-        mLoginFormView = findViewById(R.id.id_lv_login_form);*/
+
         ButterKnife.bind(this);
     }
 
