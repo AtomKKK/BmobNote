@@ -129,7 +129,6 @@ public class AllNotesFragment extends Fragment {
 
         initRecyclerView();
 
-
 //        initListView();
 
 //        registerForContextMenu(mLvNotes);
