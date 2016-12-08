@@ -33,6 +33,7 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobUser;
 
 /**
  * Created by Think on 2016/11/1.
@@ -59,7 +60,6 @@ public class NoteDetailActivity extends AppCompatActivity {
     @BindView(R.id.id_tv_title)
     TextView mTvTitle;
 
-    private String TAG = NoteDetailActivity.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,13 +79,13 @@ public class NoteDetailActivity extends AppCompatActivity {
 
         String title = mEtTitle.getText().toString();
         String content = mEditText.getText().toString();
+        mNote.setUserName(BmobUser.getCurrentUser().getUsername());
         mNote.setTitle(title);
         mNote.setContent(content);
 
-        Logger.d(TAG, "onBackPressed BmobObjectId:" + mNote.getBmobObjectId());
+        Logger.d("onBackPressed BmobObjectId:" + mNote.getBmobObjectId());
 
-        BmobUtils.saveNote2Cloud(mNote);
-        BmobUtils.SyncNotes2LocalDB(mNote, mNoteDAO, mNoteID);
+        BmobUtils.SyncNotes(mNote, mNoteDAO, mNoteID);
 
         if (mCursor != null) {
             mCursor.close();
@@ -122,7 +122,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                 mNote.setCreateTime(mCursor.getString(mCursor.getColumnIndex("create_time")));
 //                mNote.setLocalId(mCursor.getString(mCursor.getColumnIndex("create_time")));
                 mNote.setBmobObjectId(mCursor.getString(mCursor.getColumnIndex("bmob_object_id")));
-                Logger.d(TAG, "BmobObjectId:" + mNote.getBmobObjectId());
+                Logger.d("BmobObjectId:" + mNote.getBmobObjectId());
             }
 
             mToolbar.setTitle(mNote.getTitle());
@@ -158,7 +158,7 @@ public class NoteDetailActivity extends AppCompatActivity {
     private void displayNote() {
     /* 替换富文本 20161024 STA */
         String content = mNote.getContent();
-        Logger.d(TAG, "content from DB :" + mNote.getContent());
+        Logger.d("content from DB :" + mNote.getContent());
         if (mNote.getContent().length() > 0) {
             String[] contents = content.split("☆");
             ArrayList<String> contentList = new ArrayList<>();
@@ -173,7 +173,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                 }
 
             }
-            Logger.d(TAG, "final text to shown :" + tempContent);
+            Logger.d("final text to shown :" + tempContent);
 
             for (String line : contentList) {
 
@@ -181,7 +181,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                     continue;
                 }
                 if (line.startsWith("/") && (line.endsWith(".jpg") || line.endsWith(".png"))) {
-                    Logger.d(TAG, "line :" + line);
+                    Logger.d("line :" + line);
 
                     mEditText.insertBitmap(line);
                 } else {
@@ -213,12 +213,12 @@ public class NoteDetailActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Logger.d(TAG, "onTextChanged: " + mEditText.getmContentList().toString());
+                Logger.d("onTextChanged: " + mEditText.getmContentList().toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Logger.d(TAG, "afterTextChanged: " + mEditText.getText().toString());
+                Logger.d("afterTextChanged: " + mEditText.getText().toString());
 
 
             }
@@ -226,7 +226,7 @@ public class NoteDetailActivity extends AppCompatActivity {
         mEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Logger.d(TAG, "getSelectionStart: " + mEditText.getSelectionStart());
+                Logger.d("getSelectionStart: " + mEditText.getSelectionStart());
             }
         });
 
@@ -258,7 +258,7 @@ public class NoteDetailActivity extends AppCompatActivity {
                     if (data != null) {
                         Uri selectedImage = data.getData();
                         final String imagePath = UriUtils.getFilePathByUri(this, selectedImage);
-                        Logger.d(TAG, "image path is : " + imagePath);
+                        Logger.d("image path is : " + imagePath);
                         String temp[] = imagePath.split("/");
                         String imageName = null;
                         if (temp.length > 1) {
@@ -289,8 +289,6 @@ public class NoteDetailActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
 
 }

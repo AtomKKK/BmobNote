@@ -29,7 +29,7 @@ import java.util.List;
 
 public class PictureAndTextEditorView extends EditText {
 
-    private final String TAG = "PATEditorView";
+
     private Context mContext;
     private List<String> mContentList;
 
@@ -198,25 +198,11 @@ public class PictureAndTextEditorView extends EditText {
         String[] filenames = fileFullPath.split("/");
         String filename = filenames[filenames.length - 1];
         File file = new File(fileFullPath.replaceAll(filename, ""), filename);
-//        File filePath = new File(fileFullPath.replaceAll(filename,""));
         File filePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
-//        File filePath = new File(Environment.getExternalStorageDirectory() + "/Download/" + filename);
-        /*if (!filePath.exists()) {
-            filePath.mkdir();
-            //☆/storage/sdcard/Download/4248ce44579c4e2cc5c9a6cc9f5c1539.jpg☆
-
-            Log.e(TAG, "filename: " + filename);
-            //文件不存在->从云端下载
-            String url = BmobUtils.obtaiFileUrlByLocalPath(fileFullPath);
-
-            BmobUtils.downloadFile(filename, url, filePath);
-
-        }*/
-
 
         try {
 
-            Logger.d(TAG, "filePath.getAbsolutePath(): " + filePath.getAbsolutePath());
+            Logger.d("filePath.getAbsolutePath(): " + filePath.getAbsolutePath());
             boolean isCreated = filePath.createNewFile();
             if (isCreated) {
                 //文件不存在->从云端下载

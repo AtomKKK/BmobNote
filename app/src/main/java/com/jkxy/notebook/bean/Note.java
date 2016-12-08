@@ -1,10 +1,12 @@
 package com.jkxy.notebook.bean;
+
 import java.util.List;
+
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobFile;
 
 /**
- *  Created by Think on 2016/11/1.
+ * Created by Think on 2016/11/1.
  * <p/>
  * 记事的实体类
  * <p>
@@ -27,16 +29,8 @@ public class Note extends BmobObject {
 
     //添加image属性
     private List<BmobFile> images;
-
-    public List<String> getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(List<String> imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     private List<String> imageUrl;
+
 
     public Note(String title, String content, String createTime, List<BmobFile> images) {
         this.title = title;
@@ -52,7 +46,17 @@ public class Note extends BmobObject {
     }
 
     public Note() {
+
     }
+
+    public List<String> getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(List<String> imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getBmobObjectId() {
         return bmobObjectId;
     }
@@ -60,6 +64,7 @@ public class Note extends BmobObject {
     public void setBmobObjectId(String bmobObjectId) {
         this.bmobObjectId = bmobObjectId;
     }
+
     public String getUpdateTime() {
         return updateTime;
     }
@@ -67,6 +72,7 @@ public class Note extends BmobObject {
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
+
     public String getTitle() {
         return title;
     }

@@ -109,6 +109,7 @@ public class AllNoteListAdapter extends RecyclerView.Adapter<AllNoteListAdapter.
         TextView tvTitle;
         @BindView(R.id.id_tv_note_update_time)
         TextView tvUpdateTime;
+
         View tvNote;
 
         public ViewHolder(View itemView) {

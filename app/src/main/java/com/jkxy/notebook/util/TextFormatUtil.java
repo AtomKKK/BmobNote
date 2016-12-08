@@ -10,7 +10,7 @@ import java.util.Date;
  * 格式化字符串的工具类
  */
 public class TextFormatUtil {
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static String formatDate(Date date) {
         return dateFormat.format(date);
