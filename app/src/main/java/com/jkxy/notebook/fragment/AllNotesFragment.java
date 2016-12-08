@@ -2,7 +2,6 @@ package com.jkxy.notebook.fragment;
 
 
 import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,22 +14,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.jkxy.notebook.R;
-import com.jkxy.notebook.activity.NoteDetailActivity;
 import com.jkxy.notebook.activity.SplashActivity;
-import com.jkxy.notebook.adapter.ShowNoteAdapter;
+import com.jkxy.notebook.adapter.AllNoteListAdapter;
 import com.jkxy.notebook.bean.Note;
 import com.jkxy.notebook.db.NoteDAO;
 import com.jkxy.notebook.service.AutoSyncService;
@@ -60,16 +56,19 @@ import cn.bmob.v3.listener.UpdateListener;
  * Created by Think
  * 显示所有Note,使用Loader实现异步加载
  */
-public class AllNotesFragment extends Fragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
-    private com.jkxy.notebook.db.NoteDAO mNoteDAO;
+public class AllNotesFragment extends Fragment {
 
-    @BindView(R.id.id_lv_all_note)
-    ListView mLvNotes;
+    private NoteDAO mNoteDAO;
+    /*
+        @BindView(R.id.id_lv_all_note)
+        ListView mLvNotes;*/
     @BindView(R.id.id_srl_refresh)
     SwipeRefreshLayout mSrlRefresh;
+    @BindView(R.id.id_lv_all_note)
+    RecyclerView mRecyclerView;
     private Unbinder unbinder;
 
-    private CursorAdapter mAdapter;
+    //    private CursorAdapter mAdapter;
     private Cursor mCursor;
     private final static int CONTEXT_UPDATE_ORDER = 0;
     private final static int CONTEXT_DELETE_ORDER = 1;
@@ -85,6 +84,7 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     private SyncStateReceiver mReceiver;
     //    private String mUserId;
     private String mUserName;
+    private AllNoteListAdapter mAllNoteListAdapter;
 
 
     @Override
@@ -127,14 +127,28 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
         initSwipeRefresh();
         initEvent();
 
+        initRecyclerView();
 
+
+//        initListView();
+
+//        registerForContextMenu(mLvNotes);
+        registerForContextMenu(mRecyclerView);
+
+        return root;
+    }
+
+    /*private void initListView() {
         mAdapter = new ShowNoteAdapter(getActivity(), mCursor);
         mLvNotes.setAdapter(mAdapter);
         mLvNotes.setOnItemClickListener(this);
+    }*/
 
-        registerForContextMenu(mLvNotes);
-
-        return root;
+    private void initRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mAllNoteListAdapter = new AllNoteListAdapter(mCursor, getActivity());
+        mRecyclerView.setAdapter(mAllNoteListAdapter);
     }
 
 
@@ -142,7 +156,9 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
     public void onResume() {
         super.onResume();
         mCursor = mNoteDAO.queryNote(null, null);
-        mAdapter.changeCursor(mCursor);
+        mAllNoteListAdapter.setCursor(mCursor);
+        mAllNoteListAdapter.notifyDataSetChanged();
+//        mAdapter.changeCursor(mCursor);
     }
 
     @Override
@@ -168,17 +184,27 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
 
     }
 
+    private AllNoteListAdapter getAdapter() {
+        return mAllNoteListAdapter;
+    }
 
     /**
      * 上下文菜单的回调函数
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        /*AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         //int position = mAdapter.getItem(info.position);
         int position = info.position; // list中的位置
         Cursor c = (Cursor) mAdapter.getItem(position); // CursorAdapter中getItem()返回特定的cursor对象
         final int itemID = c.getInt(c.getColumnIndex("_id"));
+*/
+
+        Cursor cursor = mAllNoteListAdapter.getCursor();
+        cursor.moveToPosition(mAllNoteListAdapter.getPosition());
+        final int itemID = cursor.getInt(cursor.getColumnIndex("_id"));
+
+
         Logger.d(TAG, "点击了note：" + itemID);
         switch (item.getOrder()) {
             case CONTEXT_UPDATE_ORDER: // 更新操作
@@ -212,53 +238,54 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                     Logger.d(TAG, "本地服务器删除" + i + "条数据。");
 
                 }
-
-                mAdapter.changeCursor(mNoteDAO.queryNote(null, null));
+                mAllNoteListAdapter.notifyItemRemoved(mAllNoteListAdapter.getPosition());
+//                mAdapter.changeCursor(mNoteDAO.queryNote(null, null));
 
                 break;
         }
         return super.onContextItemSelected(item);
     }
 
-    /**
+   /* *//**
      * 创建上下文菜单
-     */
+     *//*
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle("Enter your choice:");
         menu.add(0, v.getId(), CONTEXT_UPDATE_ORDER, "Update");
         menu.add(0, v.getId(), CONTEXT_DELETE_ORDER, "Delete");
-    }
+    }*/
 
-    // 跳转到详情页
+    /*// 跳转到详情页
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor c = (Cursor) mAdapter.getItem(position); // CursorAdapter中getItem()返回特定的cursor对象
         int itemID = c.getInt(c.getColumnIndex("_id"));
-//        Log.v("LOG", "AllNoteFragment itemID: " + itemID);
         Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
         intent.putExtra(NoteDetailActivity.SENDED_NOTE_ID, itemID);
         startActivity(intent);
     }
-
-    @Override
+*/
+//    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = Uri.parse("content://com.jkxy.NoteBook");
 
         return new CursorLoader(getActivity(), uri, null, null, null, null);
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
-    }
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+//        mAdapter.swapCursor(data);
+//    }
 
 
-    @Override
+    //    @Override
+/*
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
     }
+*/
 
 
     private void uploadNotes2Cloud() {
@@ -318,7 +345,11 @@ public class AllNotesFragment extends Fragment implements AdapterView.OnItemClic
                     }
                     mAllNotes.clear();
                     mSrlRefresh.setRefreshing(false);
-                    mAdapter.changeCursor(mNoteDAO.queryNote(null, null));
+
+                    mAllNoteListAdapter.setCursor(mNoteDAO.queryNote(null,null));
+                    mAllNoteListAdapter.notifyDataSetChanged();
+
+//                    mAdapter.changeCursor(mNoteDAO.queryNote(null, null));
                     Snackbar.make(root, "同步完成", Snackbar.LENGTH_SHORT).show();
 
                 } else {
